@@ -8,8 +8,15 @@ use App\Http\Controllers\CustomerController;
 // @ Only authorized
 Route::group(['middleware' => 'auth'], function() {
     // @ Customers
-    Route::get('/', [CustomerController::class, 'get']);    
-    Route::post('/', [CustomerController::class, 'create'])->name('customer-create');  
+    Route::get('/', [CustomerController::class, 'get'])->name('main');       
+    Route::post('/', [CustomerController::class, 'create'])->name('customer-create'); 
+    Route::post('/filter', [CustomerController::class, 'filter'])->name('filter'); 
+
+    // @ Customer 
+    Route::get('/customers/{identifier}', function($identifier) {
+        $customer = new CustomerController(); 
+        return $customer->getCustomer($identifier); 
+    })->name('single-customer'); 
 
     // @ Logout
     Route::get('/logout', [AccountController::class, 'logout'])->name('logout');

@@ -14,9 +14,18 @@ class CustomerController extends Controller
     }
 
     // @ Get filtered customers
-    public function filter(Request $request) { 
-        $customers = Customer::where('name', 'like', '%' . $request->input('filter') . '%')->get();
-
+    public function filter(Request $request) {   
+        $customers = Customer::where(
+            'name', 'like', '%' . $request->input('filter') . '%')
+            ->orWhere(
+                'identifier', 'like', '%' . $request->input('filter') . '%'
+            )->orWhere(
+                'phoneNumber', 'like', '%' . $request->input('filter') . '%'
+            )->orWhere(
+                'email', 'like', '%' . $request->input('filter') . '%'
+            )
+        ->get();
+        
         return view('home', compact('customers')); 
     }
 
@@ -56,5 +65,10 @@ class CustomerController extends Controller
         } catch(Exception $err) {
             return $err; 
         }
+    }
+
+    // @ Single customer 
+    public function getCustomer($identifier) { 
+        return view('customer', compact('identifier')); 
     }
 }

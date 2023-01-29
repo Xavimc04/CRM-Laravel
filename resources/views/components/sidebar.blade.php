@@ -15,7 +15,7 @@
         <div class="nav">
             <div class="routing">
                 <div class="title">{{ Auth::user()->name }}</div>
-                <div><span class="material-icons">person</span><a href="">Customers</a></div>
+                <div><span class="material-icons">person</span><a href="{{ URL::route('main') }}">Customers</a></div>
                 <div><span class="material-icons">badge</span><a href="">Dashboard</a></div>
                 <div><span class="material-icons">local_activity</span><a href="">Tickets</a></div>
                 <div><span class="material-icons">eject</span><a href="">Following</a></div>

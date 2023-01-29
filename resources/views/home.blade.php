@@ -13,30 +13,38 @@
     <body>
         @include('/components/sidebar')
 
+        @php 
+            $CUSTOMERS_DATA = $customers;  
+        @endphp
+
         <div class="middle">
             <div class="container">
 
-                <!-- @ Search -->
-                <div class="header">
-                    <div class="bar">
-                        <span class="material-icons">search</span>
-                        <input class="filter" type="text" name="filter" placeholder="John Doe...">
-                    </div>
+                <form method="POST" action="{{ route('filter') }}">
+                    @csrf 
 
-                    <div class="info">   
-                        <button class="button" type="submit">Search</button>
-                        <button class="button" onclick="toggleCustomerCreation()">Create</button>
+                    <!-- @ Search -->
+                    <div class="header">
+                        <div class="bar">
+                            <span class="material-icons">search</span>
+                            <input class="filter" type="text" name="filter" placeholder="Identifier, Phone, Name..."> 
+                        </div>
+    
+                        <div class="info">   
+                            <button class="button">Search</button>
+                            <button class="button" onclick="toggleCustomerCreation()">Create</button>
+                        </div>
                     </div>
-                </div>
+                </form>
 
                 <!-- @ Information/Refresh -->
                 <div class="information">
-                    <div>Total customers: {{ $customers->count() }}</div>
-                    <div class="refresh" onclick="location.reload()"><span class="material-icons">sync</span></div>
+                    <div>Total customers: {{ $CUSTOMERS_DATA->count() }}</div>
+                    <div class="refresh"><a href="{{ URL::route('main') }}"><span class="material-icons">sync</span></a></div>
                 </div>
 
                 <!-- @ Table -->
-                @if ($customers->count() > 0) 
+                @if ($CUSTOMERS_DATA->count() > 0) 
                     <table> 
                         <tr class="head">
                             <th>Identifier</th>
@@ -47,8 +55,8 @@
                             <th>Created</th>
                         </tr>
 
-                        @foreach ($customers as $customer)
-                            <tr>
+                        @foreach ($CUSTOMERS_DATA as $customer)
+                            <tr onclick="window.location.href = '/customers/{{ $customer->identifier }}'">
                                 <td>{{ $customer->identifier }}</td>
                                 <td>{{ $customer->name }}</td> 
                                 <td>{{ $customer->phoneNumber }}</td>
@@ -72,7 +80,7 @@
                 <div class="popup-box">
                     <div class="close"><span onclick="toggleCustomerCreation()" class="material-icons close-icon">close</span></div>
 
-                    <form method="POST" action="{{ route('customer-create') }}">
+                    <form method="POST" class="form-create" action="{{ route('customer-create') }}">
                         @csrf 
 
                         <input type="text" name="identifier" value="{{ old('identifier') }}" maxlength="9" placeholder="Identifier" />
@@ -94,23 +102,11 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.1/axios.min.js"></script>
     </body> 
 
-    <script>
-        $(".filter").on("input", function() {
-            const value = $(this).val()
-            
-            
-        });
-
-        function requestFiltered() {
-            axios.post('')
-        }
-
+    <script>  
         function toggleCustomerCreation() { 
-            if($('.popup-container').css('display') == 'none') { 
-                console.log('dawdawd')
+            if($('.popup-container').css('display') == 'none') {  
                 $('.popup-container').css('display', 'flex'); 
-            } else {
-                console.log('aaaaaa')
+            } else { 
                 $('.popup-container').css('display', 'none'); 
             }
         }
@@ -135,6 +131,10 @@
     </script>
 
     <style> 
+        a {
+            all: unset
+        }
+
         .information {
             width: 100%;  
             display: flex; 
@@ -188,7 +188,7 @@
             padding: 15px 15px; 
         }
 
-        form {
+        .form-create {
             margin-top: 20px; 
             width: 100%; 
             display: flex; 
@@ -206,7 +206,7 @@
             border-radius: 3px; 
         }
 
-        form input {
+        .form-create input {
             padding: 10px 0px;
             text-align: center; 
             width: 80%;   
@@ -217,15 +217,15 @@
             background-color: rgb(211, 209, 209); 
         }
 
-        form input:focus {
+        .form-create input:focus {
             outline: none; 
         }
 
-        form input:not(:first-child) {
+        .form-create input:not(:first-child) {
             margin-top: 15px; 
         }
 
-        form input[type="submit"] {
+        .form-create input[type="submit"] {
             margin-top: 35px; 
             box-shadow: none; 
             background: rgb(109, 124, 212); 
@@ -233,7 +233,7 @@
             color: white;  
         }
 
-        form input[type="submit"]:hover {
+        .form-create input[type="submit"]:hover {
             box-shadow: 0px 0px 5px rgb(109, 124, 212); 
             transition: .4s; 
         }
@@ -289,7 +289,7 @@
         }
 
         .bar span {
-            padding-left: 5px; 
+            padding: 0px 15px; 
         }
 
         .bar input {
@@ -298,7 +298,7 @@
             border: none; 
             padding: 5px 10px; 
             font-size: 1.1rem; 
-            width: 350px; 
+            width: 350px;  
         }
 
         .bar input:focus {
