@@ -4,12 +4,13 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth; 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\CustomerController; 
+use App\Http\Controllers\ServiceController; 
 
 // @ Only authorized
 Route::group(['middleware' => 'auth'], function() {
     // @ Customers
     Route::get('/', [CustomerController::class, 'get'])->name('main');       
-    Route::post('/', [CustomerController::class, 'create'])->name('customer-create'); 
+    Route::post('/customer-create', [CustomerController::class, 'create'])->name('customer-create'); 
     Route::post('/filter', [CustomerController::class, 'filter'])->name('filter'); 
 
     // @ Customer 
@@ -20,6 +21,10 @@ Route::group(['middleware' => 'auth'], function() {
 
     // @ Logout
     Route::get('/logout', [AccountController::class, 'logout'])->name('logout');
+
+    // @ Logout
+    Route::get('/services', [ServiceController::class, 'get'])->name('services'); 
+    Route::post('/services', [ServiceController::class, 'create'])->name('create-package'); 
 }); 
 
 // @ Login

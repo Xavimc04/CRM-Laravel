@@ -20,22 +20,21 @@
         <div class="middle">
             <div class="container">
 
-                <form method="POST" action="{{ route('filter') }}">
-                    @csrf 
-
-                    <!-- @ Search -->
-                    <div class="header">
+                <!-- @ Search -->
+                <div class="header">
+                    <form method="POST" action="{{ route('filter') }}">
+                        @csrf 
+    
                         <div class="bar">
                             <span class="material-icons">search</span>
                             <input class="filter" type="text" name="filter" placeholder="Identifier, Phone, Name..."> 
                         </div>
-    
-                        <div class="info">   
-                            <button class="button">Search</button>
-                            <button class="button" onclick="toggleCustomerCreation()">Create</button>
-                        </div>
+                    </form>
+
+                    <div class="info">    
+                        <button class="button" onclick="toggleCustomerCreation()">Create</button>
                     </div>
-                </form>
+                </div>
 
                 <!-- @ Information/Refresh -->
                 <div class="information">
@@ -103,7 +102,7 @@
     </body> 
 
     <script>  
-        function toggleCustomerCreation() { 
+        function toggleCustomerCreation() {  
             if($('.popup-container').css('display') == 'none') {  
                 $('.popup-container').css('display', 'flex'); 
             } else { 
@@ -130,7 +129,7 @@
         }
     </script>
 
-    <style> 
+    <style>   
         a {
             all: unset
         }
@@ -255,7 +254,7 @@
 
         .container {   
             width: 60%;  
-            padding-bottom: 50px; 
+            padding-bottom: 50px;  
         }
 
         .header {
@@ -270,9 +269,8 @@
 
         .header .info { 
             display: flex;
-            justify-content: space-between;  
-            align-items: center;    
-            width: 340px;  
+            justify-content: flex-start;  
+            align-items: center;   
         }
 
         .header .info div {
@@ -369,43 +367,7 @@
             box-shadow: 0px 0px 5px rgb(80, 206, 80)
         }
 
-        @media screen and (max-width: 1700px) {  
-            .bar {
-                width: 100%; 
-            } 
-
-            .header .info {  
-                justify-content: space-between; 
-                margin-top: 20px; 
-            }
-        }
-
-        @media screen and (max-width: 900px) {
-            .middle {
-                display: block; 
-            }
-
-            .container { 
-                position: absolute; 
-                left: 55%; 
-                transform: translate(-50%);  
-                z-index: -1; 
-                width: 70%;   
-            }
-
-            .bar {
-                width: 100%; 
-            }
-
-            .header {
-                flex-direction: column;  
-            }
-
-            .header .info { 
-                width: 100%; 
-                margin-top: 20px; 
-            }
-
+        @media screen and (max-width: 1800px) {  
             table {
                 border: 0; 
             }
@@ -450,6 +412,33 @@
             
             table td:last-child {
                 border-bottom: 0;
+            }
+        }
+
+        @media screen and (max-width: 1000px) {
+            .middle {
+                display: block; 
+            }
+
+            .container { 
+                position: absolute; 
+                left: 55%; 
+                transform: translate(-50%);  
+                z-index: -1; 
+                width: 70%;    
+            }
+
+            .bar {
+                width: 100%; 
+            }  
+
+            .header {
+                flex-direction: column;  
+            }
+
+            .header .info { 
+                width: 100%; 
+                margin-top: 20px; 
             }
         }
 

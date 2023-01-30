@@ -11,26 +11,28 @@ class CustomerController extends Controller
     public function get() { 
         $customers = Customer::all();
         return view('home', compact('customers')); 
-    }
+    } 
 
     // @ Get filtered customers
-    public function filter(Request $request) {   
-        $customers = Customer::where(
-            'name', 'like', '%' . $request->input('filter') . '%')
-            ->orWhere(
-                'identifier', 'like', '%' . $request->input('filter') . '%'
-            )->orWhere(
-                'phoneNumber', 'like', '%' . $request->input('filter') . '%'
-            )->orWhere(
-                'email', 'like', '%' . $request->input('filter') . '%'
-            )
-        ->get();
-        
-        return view('home', compact('customers')); 
+    public function filter(Request $request) { 
+        if($request->has('filter')){
+            $customers = Customer::where(
+                'name', 'like', '%' . $request->input('filter') . '%')
+                ->orWhere(
+                    'identifier', 'like', '%' . $request->input('filter') . '%'
+                )->orWhere(
+                    'phoneNumber', 'like', '%' . $request->input('filter') . '%'
+                )->orWhere(
+                    'email', 'like', '%' . $request->input('filter') . '%'
+                )
+            ->get();
+            
+            return view('home', compact('customers')); 
+        }  
     }
 
     // @ Customer create
-    public function create(Request $request) {
+    public function create(Request $request) { 
         if(
             !$request->filled('identifier') 
             || !$request->filled('name') 
@@ -69,6 +71,12 @@ class CustomerController extends Controller
 
     // @ Single customer 
     public function getCustomer($identifier) { 
-        return view('customer', compact('identifier')); 
+        $customer = Customer::where('identifier', $identifier)->first();
+
+        if(!$customer) {
+            return redirect('/'); 
+        }
+
+        return view('customer', compact('customer')); 
     }
 }
