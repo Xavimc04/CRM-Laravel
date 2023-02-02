@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 use App\Models\Customer;
+use App\Models\Role;
+use App\Models\Ticket;
 use Exception;
 use Illuminate\Http\Request; 
 
@@ -29,6 +31,19 @@ class CustomerController extends Controller
             
             return view('home', compact('customers')); 
         }  
+    }
+
+    public function handleState(Request $request) {
+        $doesExist = Customer::where('identifier', $request->input('identifier'))->first(); 
+
+        if($doesExist) {
+            $doesExist->active = !$doesExist->active; 
+            $doesExist->update();
+            
+            return redirect()->back(); 
+        } else {
+            return redirect()->back()->with('error', 'An internal error has been appeared, this user does not exist...');
+        }
     }
 
     // @ Customer create
@@ -72,11 +87,13 @@ class CustomerController extends Controller
     // @ Single customer 
     public function getCustomer($identifier) { 
         $customer = Customer::where('identifier', $identifier)->first();
+        $roles = Role::where('identifier', $identifier)->get(); 
+        $tickets = Ticket::where('customerId', $identifier)->get(); 
 
         if(!$customer) {
             return redirect('/'); 
         }
 
-        return view('customer', compact('customer')); 
+        return view('customer', compact('customer', 'roles', 'tickets')); 
     }
 }
