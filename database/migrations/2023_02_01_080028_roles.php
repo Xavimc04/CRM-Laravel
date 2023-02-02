@@ -6,22 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
+    public $timestamps = false; 
+    
+     /**
      * Run the migrations.
      *
      * @return void
      */
     public function up()
     {
-        Schema::create('customers', function(Blueprint $table) {
+        Schema::create('roles', function(Blueprint $table) {
             $table->id();
             $table->string('identifier');
-            $table->string('name'); 
-            $table->date('dateOfBirth');
-            $table->string('phoneNumber');
-            $table->string('email'); 
-            $table->integer('active')->default(0);  
-            $table->string('created_at')->nullable();
+            $table->string('color'); 
+            $table->string('role'); 
         }); 
     }
 
@@ -32,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('customers');
+        Schema::dropIfExists('roles');
     }
 };

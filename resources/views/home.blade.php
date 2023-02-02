@@ -367,7 +367,7 @@
             box-shadow: 0px 0px 5px rgb(80, 206, 80)
         }
 
-        @media screen and (max-width: 1800px) {  
+        @media screen and (max-width: 1600px) {  
             table {
                 border: 0; 
             }

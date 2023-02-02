@@ -5,24 +5,40 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\CustomerController; 
 use App\Http\Controllers\ServiceController; 
+use App\Http\Controllers\RoleController; 
+use App\Http\Controllers\TicketController; 
 
 // @ Only authorized
 Route::group(['middleware' => 'auth'], function() {
-    // @ Customers
     Route::get('/', [CustomerController::class, 'get'])->name('main');       
     Route::post('/customer-create', [CustomerController::class, 'create'])->name('customer-create'); 
     Route::post('/filter', [CustomerController::class, 'filter'])->name('filter'); 
 
-    // @ Customer 
     Route::get('/customers/{identifier}', function($identifier) {
         $customer = new CustomerController(); 
         return $customer->getCustomer($identifier); 
     })->name('single-customer'); 
 
-    // @ Logout
+    Route::post('/customers/handleState', [CustomerController::class, 'handleState'])->name('handle-customer-state'); 
+
+    Route::post('/role/create', [RoleController::class, 'add'])->name('role-create'); 
+
+    Route::post('/roles/delete/${roleId}', function($roleId) {
+        $role = new RoleController(); 
+        return $role->delete($roleId); 
+    })->name('role-delete'); 
+
+    Route::post('tickets/subscribers/add', [TicketController::class, 'subToTicket'])->name('subtiket');
+
+    Route::get('/tickets/{ticketId}', function($ticketId) {
+        $ticket = new TicketController(); 
+        return $ticket->getTicket($ticketId); 
+    })->name('get-ticket'); 
+
+    Route::post('/ticket/create', [TicketController::class, 'createNewTicket'])->name('create-ticket');
+
     Route::get('/logout', [AccountController::class, 'logout'])->name('logout');
 
-    // @ Logout
     Route::get('/services', [ServiceController::class, 'get'])->name('services'); 
     Route::post('/services', [ServiceController::class, 'create'])->name('create-package'); 
 }); 
