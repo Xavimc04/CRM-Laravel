@@ -44,13 +44,6 @@
                                 @foreach ($ticket->subs as $sub)
                                     <div class="sub">{{ $sub }}</div>
                                 @endforeach
-
-                                <form method="POST" action="{{ route('subtiket') }}">
-                                    @csrf 
-
-                                    <input type="hidden" name="ticketId" value="{{ $ticket->id }}">
-                                    <input class="sub" type="submit" value="Add to ticket">
-                                </form>
                             </div>
 
                             <div class="title">Queue</div>
@@ -62,15 +55,46 @@
                             <div class="description">Creation Date: <span class="purple">{{ $ticket->created_at }}</span></div>
                             <div class="description">Last update: <span class="purple">{{ $ticket->updated_at }}</span></div>
                         
-                            <div class="buttonActions">
-                                <button>{{ $ticket->solved ? 'Reopen' : 'Solve' }}</button> 
-                                <button>Follow ticket</button>
+                            <div class="buttonActions">   
+                                <form method="POST" action="{{ route('handleTicketState') }}">
+                                    @csrf 
+
+                                    <input type="hidden" name="ticketId" value="{{ $ticket->id }}">
+                                    <input type="submit" value="{{ $ticket->solved ? 'Reopen' : 'Solve' }}">
+                                </form>
+
+                                <form method="POST" action="{{ route('subtiket') }}">
+                                    @csrf 
+
+                                    <input type="hidden" name="ticketId" value="{{ $ticket->id }}">
+                                    <input type="submit" value="Subscribe">
+                                </form>
                             </div>
                         </div>
                     </div>
 
-                    <div class="right">
-                        Here it's the right side. 
+                    <div class="right"> 
+                        <div class="commentContainer">
+                            @if ($ticket->notes != null)
+                                @foreach ($ticket->notes as $note)
+                                    <div class="note {{ $note->sender == Auth::user()->name ? 'self' : 'target' }}">
+                                        <div class="note-sender">{{ $note->sender }} <span>{{ $note->date }}</span></div>
+                                        <div class="note-content">{{ $note->content }}</div>
+                                        <div class="note-hour">Sent at {{ $note->hours }}</div>
+                                    </div>
+                                @endforeach
+                            @else 
+                                <div class="note target">No comments to display</div>
+                            @endif
+                        </div>
+
+                        <form class="createComment" method="POST" action="{{ route('createComment') }}">
+                            @csrf 
+
+                            <input type="text" name="content" placeholder="New comment...">
+                            <input type="hidden" name="ticketId" value="{{ $ticket->id }}">
+                            <button type="submit"><span class="material-icons">send</span></button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -78,6 +102,107 @@
     </body>
 
     <style>
+        .note {
+            margin-top: 20px;  
+            max-width: 500px;
+            padding: 10px; 
+            border-radius: 3px;  
+            margin-bottom: 20px; 
+        }
+
+        .self {  
+            align-self: flex-end;
+            margin-right: 20px; 
+            background: rgb(82, 82, 82); 
+            color: whitesmoke; 
+        }
+
+        .target { 
+            align-self: flex-start;
+            margin-left: 20px; 
+            background: rgb(109, 124, 212); 
+            color: white; 
+        }
+
+        .note-sender {
+            font-size: 1.2rem; 
+        }
+
+        .note-sender span {
+            opacity: .6;
+            margin-left: 5px; 
+            font-size: .9rem; 
+        }
+
+        .note-content {
+            margin-top: 15px; 
+        }
+
+        .note-hour {
+            margin-top: 15px; 
+            opacity: .6;
+        }
+
+        .flexbox .right {
+            width: 55%; 
+            height: 100%; 
+        } 
+
+        .flexbox .right .commentContainer {
+            background: whitesmoke; 
+            border-radius: 3px; 
+            height: 600px; 
+            overflow-y: scroll; 
+            -ms-overflow-style: none; 
+            scrollbar-width: none; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: flex-start;
+        }
+
+        .flexbox .right .commentContainer::-webkit-scrollbar {
+            display: none;
+        }
+
+        .flexbox .right .createComment {
+            background: whitesmoke; 
+            border-radius: 3px; 
+            margin-top: 30px;  
+            display: flex; 
+            align-content: center; 
+            justify-content: space-between; 
+        }
+
+        .createComment input {
+            width: 80%; 
+            padding: 10px 15px; 
+            font-family: 'Nunito', sans-serif;
+            background: transparent; 
+            border: none; 
+            font-size: 1.1rem; 
+        }
+
+        .createComment input:focus {
+            outline: none; 
+        }
+
+        .createComment button { 
+            margin-top: 5px; 
+            border: none; 
+            font-family: 'Nunito', sans-serif; 
+            border-radius: 5px; 
+            color: rgb(109, 124, 212); 
+            transition: .5s;    
+            background: transparent; 
+            display: flex; 
+            justify-content: center; 
+            align-content: center; 
+        }
+
+        .createComment button span {
+            font-size: 1.8rem; 
+        }
+
         .buttonActions {
             margin-top: 30px;   
             margin-left: 2%;  
@@ -85,6 +210,19 @@
             display: flex; 
             flex-direction: row; 
             flex-wrap: wrap; 
+        }
+
+        .buttonActions form input {
+            margin-top: 5px; 
+            width: 150px; 
+            border: none; 
+            font-family: 'Nunito', sans-serif; 
+            border-radius: 5px; 
+            background: rgb(109, 124, 212); 
+            transition: .5s;   
+            color: white;  
+            padding: 10px 0px; 
+            margin-right: 20px; 
         }
 
         .buttonActions button {
@@ -165,11 +303,6 @@
             border-radius: 5px; 
             padding-bottom: 20px; 
         }
- 
-        .flexbox .right {
-            width: 55%; 
-            background: gray; 
-        } 
 
         .title {
             padding: 0px 15px;  

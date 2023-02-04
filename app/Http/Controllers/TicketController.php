@@ -5,19 +5,69 @@ use App\Models\Ticket;
 use App\Models\Customer; 
 use Illuminate\Http\Request; 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class TicketController extends Controller
 {
-    public function getAllTickets() {
-
+    public function get() {
+        $tickets = DB::table('tickets')->simplePaginate(30); 
+        return view('tickets', compact('tickets')); 
     }
 
-    public function getCustomerTickets() {
-
+    public function filter(Request $request) {
+        if($request->has('filter')){
+            $tickets = DB::table('tickets')->where(
+                'customerId', 'like', '%' . $request->input('filter') . '%')
+                ->orWhere(
+                    'id', 'like', '%' . $request->input('filter') . '%'
+                )
+                ->simplePaginate(40);
+            
+            return view('tickets', compact('tickets')); 
+        } 
     }
 
-    public function getFilteredTickets() {
+    public function createComment(Request $request) {
+        if(!$request->filled('content')) {
+            return redirect()->back(); 
+        }
 
+        $ticket = Ticket::where('id', $request->input('ticketId'))->first(); 
+
+        if($ticket) {
+            $TEMP_NOTES = []; 
+
+            if($ticket->notes != null) {
+                $TEMP_NOTES = json_decode($ticket->notes); 
+            }
+
+            array_push($TEMP_NOTES, [
+                "content" => $request->input('content'), 
+                "sender" => Auth::user()->name, 
+                "date" => date('d/m/y'), 
+                "hours" => date('h:m')
+            ]); 
+
+            $ticket->notes = json_encode($TEMP_NOTES); 
+            $ticket->update(); 
+        }
+
+        return redirect()->back();
+    }
+
+    public function alterTicketState(Request $request) {
+        if(!$request->input('ticketId')) {
+            return redirect()->back(); 
+        }
+
+        $ticket = Ticket::where('id', $request->input('ticketId'))->first(); 
+
+        if($ticket) {
+            $ticket->solved = !$ticket->solved; 
+            $ticket->update();  
+        } 
+
+        return redirect()->back(); 
     }
 
     public function subToTicket(Request $request) {
@@ -26,17 +76,16 @@ class TicketController extends Controller
         }
 
         $ticket = Ticket::where('id', $request->input('ticketId'))->first(); 
-        $ticket->subs = json_decode($ticket->subs); 
+        $TEMP = json_decode($ticket->subs, true); 
 
-        foreach($ticket->subs as $sub) {
+        foreach($TEMP as $sub) {
             if($sub == Auth::user()->name) {
                 return redirect()->back(); 
             }
         }
 
-        $ticket->subs = array($ticket->subs); 
-        array_push($ticket->subs, Auth::user()->name); 
-        $ticket->subs = json_encode($ticket->subs);
+        array_push($TEMP, Auth::user()->name); 
+        $ticket->subs = json_encode($TEMP);
         $ticket->update(); 
 
         return redirect()->back(); 
@@ -50,6 +99,7 @@ class TicketController extends Controller
         }
 
         $ticket->subs = json_decode($ticket->subs); 
+        $ticket->notes = json_decode($ticket->notes); 
         $customer = Customer::where('identifier', $ticket->customerId)->first(); 
 
         if(!$customer) {
@@ -84,9 +134,5 @@ class TicketController extends Controller
         } else {
             return redirect()->back()->with('error', 'Invalid customer identifier'); 
         }
-    }
-
-    public function alterTicket() {
-        
-    }
+    } 
 }

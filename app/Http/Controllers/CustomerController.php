@@ -55,13 +55,11 @@ class CustomerController extends Controller
             || !$request->filled('phone')
             || !$request->filled('email')
         ) {
-            return redirect()->back()->with('message', 'The fields must be filled in')->withInput(); 
+            return redirect()->back()->with('error', 'The fields must be filled in')->withInput(); 
         }
 
-        $canCreate = Customer::where('email', $request->input('email') || 'identifier', $request->input('identifier'))->first(); 
-
-        if($canCreate) {
-            return redirect()->back()->with('message', 'Email or identifier already in use')->withInput(); 
+        if(Customer::where('email', $request->input('email'))->first() || Customer::where('identifier', $request->input('identifier'))->first()) {
+            return redirect()->back()->with('error', 'Email or identifier already in use')->withInput(); 
         } 
         
         try {

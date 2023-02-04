@@ -15,14 +15,12 @@
         <div class="nav">
             <div class="routing">
                 <div class="title">{{ Auth::user()->name }}</div>
-                <div><span class="material-icons">person</span><a href="{{ URL::route('main') }}">Customers</a></div>
-                <div><span class="material-icons">badge</span><a href="">Permissions</a></div>
-                <div><span class="material-icons">local_activity</span><a href="">Tickets</a></div>
+                <div><span class="material-icons">person</span><a href="{{ URL::route('main') }}">Customers</a></div> 
+                <div><span class="material-icons">local_activity</span><a href="{{ URL::route('tickets') }}">Tickets</a></div>
                 <div><span class="material-icons">inventory</span><a href="{{ URL::route('services') }}">Services</a></div>  
             </div>
 
-            <div class="bottom">
-                <div><span class="material-icons">settings</span> <a href="">Settings</a></div>
+            <div class="bottom"> 
                 <div><span class="material-icons">logout</span> <a href="{{ URL::route('logout') }}">Logout</a></div>
             </div>
 

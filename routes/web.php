@@ -28,7 +28,12 @@ Route::group(['middleware' => 'auth'], function() {
         return $role->delete($roleId); 
     })->name('role-delete'); 
 
+    Route::get('/tickets', [TicketController::class, 'get'])->name('tickets'); 
+    Route::post('/tickets/filter', [TicketController::class, 'filter'])->name('filter-tickets'); 
+
     Route::post('tickets/subscribers/add', [TicketController::class, 'subToTicket'])->name('subtiket');
+    Route::post('tickets/state/toggle', [TicketController::class, 'alterTicketState'])->name('handleTicketState');
+    Route::post('tickets/comment/add', [TicketController::class, 'createComment'])->name('createComment');
 
     Route::get('/tickets/{ticketId}', function($ticketId) {
         $ticket = new TicketController(); 
